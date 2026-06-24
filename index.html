@@ -102,9 +102,9 @@
 <body>
     <div class="hearts-bg" id="heartsContainer"></div>
 
-    <!-- Аудиофайлы лежат рядом с index.html -->
-    <audio id="bgMusic" src="song.mp3" loop></audio>
-    <audio id="voiceMessage" src="vvoice.mp3"></audio>
+    <!-- Аудиофайлы из корня -->
+    <audio id="bgMusic" src="song.mp3" loop preload="auto"></audio>
+    <audio id="voiceMessage" src="vvoice.mp3" preload="auto"></audio>
 
     <div class="music-btn" id="musicToggle" title="Включить музыку">🔇</div>
     <div class="voice-btn" id="voiceToggle" title="Прослушать голосовое послание">💌</div>
@@ -119,7 +119,6 @@
             <h2 class="gallery-title">Наши мгновения 📸</h2>
             <div class="sparkle-container" id="sparkleBox">
                 <div class="gallery" id="gallery">
-                    <!-- Все фото лежат рядом с index.html -->
                     <div class="photo-card"><img src="photo1.jpg" alt="Мы вместе" onclick="openModal(this.src)"></div>
                     <div class="photo-card"><img src="photo2.jpg" alt="Счастливый момент" onclick="openModal(this.src)"></div>
                     <div class="photo-card"><img src="photo3.jpg" alt="Любовь" onclick="openModal(this.src)"></div>
@@ -170,7 +169,6 @@
     </div>
 
     <script>
-        // Все переменные объявлены строго один раз
         const heartsContainer = document.getElementById('heartsContainer');
         const galleryImages = Array.from(document.querySelectorAll('#gallery img')).map(img => img.src);
         let currentIndex = 0;
@@ -182,7 +180,7 @@
         const voice = document.getElementById('voiceMessage');
         const voiceBtn = document.getElementById('voiceToggle');
 
-        // 1. Сердечки
+        // Сердечки
         function createHeart() {
             const heart = document.createElement('div'); heart.classList.add('heart');
             heart.innerHTML = ['💜','💗','💖','💕','💝','🌸'][Math.floor(Math.random() * 6)];
@@ -194,7 +192,7 @@
         }
         setInterval(createHeart, 300);
 
-        // 2. Слайдер
+        // Слайдер
         function openModal(src) {
             currentIndex = galleryImages.indexOf(src);
             if (currentIndex === -1) currentIndex = 0;
@@ -215,14 +213,14 @@
             if (e.key === 'ArrowRight') changeSlide(1);
         });
 
-        // 3. Анимация появления
+        // Анимация
         function revealOnScroll() {
             revealEls.forEach(el => { if (el.getBoundingClientRect().top < window.innerHeight - 80) el.classList.add('active'); });
         }
         window.addEventListener('scroll', revealOnScroll);
         window.addEventListener('load', revealOnScroll);
 
-        // 4. Искры
+        // Искры
         function createSparkle() {
             const spark = document.createElement('div'); spark.className = 'sparkle';
             spark.style.left = Math.random() * 100 + '%'; spark.style.top = Math.random() * 100 + '%';
@@ -232,7 +230,7 @@
         }
         setInterval(createSparkle, 300);
 
-        // 5. Печатающийся заголовок
+        // Печать
         const fullText = "Ты — моё волшебство 💖";
         let i = 0; typedTitle.textContent = '';
         function typeWriter() {
@@ -240,7 +238,7 @@
         }
         window.addEventListener('load', typeWriter);
 
-        // 6. Сердечки по клику
+        // Сердечки по клику
         document.addEventListener('click', function(e) {
             const heart = document.createElement('span'); heart.className = 'click-heart'; heart.innerHTML = '💖';
             heart.style.left = e.clientX - 12 + 'px'; heart.style.top = e.clientY - 12 + 'px';
@@ -248,12 +246,23 @@
             setTimeout(() => heart.remove(), 800);
         });
 
-        // 7. Музыка
+        // Музыка с авторестартом при ошибке
         let isMusicPlaying = false;
-        music.addEventListener('error', () => {
+        let musicRetries = 0;
+
+        function handleMusicError() {
             console.error('Ошибка загрузки song.mp3');
-            alert('Не удалось загрузить музыкальный файл song.mp3. Проверьте, что он лежит рядом с index.html.');
-        });
+            if (musicRetries < 2) {
+                musicRetries++;
+                console.log('Повторная попытка загрузить song.mp3...');
+                music.load(); // перезагружаем
+            } else {
+                alert('Не удалось загрузить музыкальный файл song.mp3. Возможно, он повреждён. Попробуйте переконвертировать mp3.');
+            }
+        }
+
+        music.addEventListener('error', handleMusicError);
+
         musicBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             if (isMusicPlaying) {
@@ -262,23 +271,37 @@
                 musicBtn.classList.remove('playing');
                 isMusicPlaying = false;
             } else {
-                music.play().then(() => {
-                    musicBtn.textContent = '🔊';
-                    musicBtn.classList.add('playing');
-                    isMusicPlaying = true;
-                }).catch(err => {
-                    console.error('Ошибка воспроизведения song.mp3:', err);
-                    alert('Ошибка воспроизведения музыки. Файл может быть повреждён.');
-                });
+                const playPromise = music.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        musicBtn.textContent = '🔊';
+                        musicBtn.classList.add('playing');
+                        isMusicPlaying = true;
+                    }).catch(err => {
+                        console.error('Ошибка воспроизведения song.mp3:', err);
+                        alert('Ошибка воспроизведения. Попробуйте нажать ещё раз.');
+                    });
+                }
             }
         });
 
-        // 8. Голосовое
+        // Голосовое с авторестартом
         let isVoicePlaying = false;
-        voice.addEventListener('error', () => {
+        let voiceRetries = 0;
+
+        function handleVoiceError() {
             console.error('Ошибка загрузки vvoice.mp3');
-            alert('Не удалось загрузить голосовой файл vvoice.mp3. Проверьте, что он лежит рядом с index.html.');
-        });
+            if (voiceRetries < 2) {
+                voiceRetries++;
+                console.log('Повторная попытка загрузить vvoice.mp3...');
+                voice.load();
+            } else {
+                alert('Не удалось загрузить голосовой файл vvoice.mp3. Возможно, он повреждён.');
+            }
+        }
+
+        voice.addEventListener('error', handleVoiceError);
+
         voiceBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             if (isVoicePlaying) {
@@ -287,16 +310,20 @@
                 voiceBtn.classList.remove('playing');
                 isVoicePlaying = false;
             } else {
-                voice.play().then(() => {
-                    voiceBtn.textContent = '💗';
-                    voiceBtn.classList.add('playing');
-                    isVoicePlaying = true;
-                }).catch(err => {
-                    console.error('Ошибка воспроизведения vvoice.mp3:', err);
-                    alert('Ошибка воспроизведения голосового. Файл может быть повреждён.');
-                });
+                const playPromise = voice.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        voiceBtn.textContent = '💗';
+                        voiceBtn.classList.add('playing');
+                        isVoicePlaying = true;
+                    }).catch(err => {
+                        console.error('Ошибка воспроизведения vvoice.mp3:', err);
+                        alert('Ошибка воспроизведения. Попробуйте нажать ещё раз.');
+                    });
+                }
             }
         });
+
         voice.addEventListener('ended', function() {
             voiceBtn.textContent = '💌';
             voiceBtn.classList.remove('playing');
