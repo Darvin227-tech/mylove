@@ -84,30 +84,14 @@
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); color: #ff69b4; } 100% { transform: scale(1); } }
         .click-heart { position: absolute; font-size: 24px; pointer-events: none; animation: popHeart 0.8s ease-out forwards; z-index: 999; }
         @keyframes popHeart { 0% { transform: scale(0.5) translateY(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-60px); opacity: 0; } }
-        .music-btn, .voice-btn { position: fixed; z-index: 200; width: 60px; height: 60px; border-radius: 50%;
-            background: rgba(194,24,91,0.8); backdrop-filter: blur(8px); border: 2px solid rgba(255,255,255,0.6);
-            color: white; font-size: 28px; display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 4px 15px rgba(128,0,128,0.5); transition: all 0.3s ease; user-select: none; }
-        .music-btn { bottom: 30px; right: 30px; } .voice-btn { bottom: 100px; right: 30px; }
-        .music-btn:hover, .voice-btn:hover { background: rgba(123,31,162,0.9); transform: scale(1.1); box-shadow: 0 6px 20px rgba(194,24,91,0.7); }
-        .music-btn.playing, .voice-btn.playing { animation: glow 2s infinite alternate; }
-        @keyframes glow { from { box-shadow: 0 0 10px #ff69b4; } to { box-shadow: 0 0 25px #ff1493, 0 0 45px #ff69b4; } }
         footer { text-align: center; padding: 20px; color: #9c27b0; font-size: 0.9rem; margin-top: 20px; }
         @media (max-width: 600px) {
             header h1 { font-size: 2.5rem; } .gallery-title { font-size: 2rem; } .message-section { padding: 25px; }
-            .music-btn, .voice-btn { width: 50px; height: 50px; font-size: 24px; } .voice-btn { bottom: 90px; } .music-btn { bottom: 30px; }
         }
     </style>
 </head>
 <body>
     <div class="hearts-bg" id="heartsContainer"></div>
-
-    <!-- Аудиофайлы из корня -->
-    <audio id="bgMusic" src="song.mp3" loop preload="auto"></audio>
-    <audio id="voiceMessage" src="vvoice.mp3" preload="auto"></audio>
-
-    <div class="music-btn" id="musicToggle" title="Включить музыку">🔇</div>
-    <div class="voice-btn" id="voiceToggle" title="Прослушать голосовое послание">💌</div>
 
     <div class="container">
         <header class="reveal">
@@ -175,12 +159,8 @@
         const revealEls = document.querySelectorAll('.reveal');
         const sparkleBox = document.getElementById('sparkleBox');
         const typedTitle = document.getElementById('typedTitle');
-        const music = document.getElementById('bgMusic');
-        const musicBtn = document.getElementById('musicToggle');
-        const voice = document.getElementById('voiceMessage');
-        const voiceBtn = document.getElementById('voiceToggle');
 
-        // Сердечки
+        // 1. Плавающие сердечки
         function createHeart() {
             const heart = document.createElement('div'); heart.classList.add('heart');
             heart.innerHTML = ['💜','💗','💖','💕','💝','🌸'][Math.floor(Math.random() * 6)];
@@ -192,7 +172,7 @@
         }
         setInterval(createHeart, 300);
 
-        // Слайдер
+        // 2. Слайдер
         function openModal(src) {
             currentIndex = galleryImages.indexOf(src);
             if (currentIndex === -1) currentIndex = 0;
@@ -213,14 +193,14 @@
             if (e.key === 'ArrowRight') changeSlide(1);
         });
 
-        // Анимация
+        // 3. Анимация появления
         function revealOnScroll() {
             revealEls.forEach(el => { if (el.getBoundingClientRect().top < window.innerHeight - 80) el.classList.add('active'); });
         }
         window.addEventListener('scroll', revealOnScroll);
         window.addEventListener('load', revealOnScroll);
 
-        // Искры
+        // 4. Искры
         function createSparkle() {
             const spark = document.createElement('div'); spark.className = 'sparkle';
             spark.style.left = Math.random() * 100 + '%'; spark.style.top = Math.random() * 100 + '%';
@@ -230,7 +210,7 @@
         }
         setInterval(createSparkle, 300);
 
-        // Печать
+        // 5. Печатающийся заголовок
         const fullText = "Ты — моё волшебство 💖";
         let i = 0; typedTitle.textContent = '';
         function typeWriter() {
@@ -238,96 +218,12 @@
         }
         window.addEventListener('load', typeWriter);
 
-        // Сердечки по клику
+        // 6. Сердечки по клику
         document.addEventListener('click', function(e) {
             const heart = document.createElement('span'); heart.className = 'click-heart'; heart.innerHTML = '💖';
             heart.style.left = e.clientX - 12 + 'px'; heart.style.top = e.clientY - 12 + 'px';
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 800);
-        });
-
-        // Музыка с авторестартом при ошибке
-        let isMusicPlaying = false;
-        let musicRetries = 0;
-
-        function handleMusicError() {
-            console.error('Ошибка загрузки song.mp3');
-            if (musicRetries < 2) {
-                musicRetries++;
-                console.log('Повторная попытка загрузить song.mp3...');
-                music.load(); // перезагружаем
-            } else {
-                alert('Не удалось загрузить музыкальный файл song.mp3. Возможно, он повреждён. Попробуйте переконвертировать mp3.');
-            }
-        }
-
-        music.addEventListener('error', handleMusicError);
-
-        musicBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (isMusicPlaying) {
-                music.pause();
-                musicBtn.textContent = '🔇';
-                musicBtn.classList.remove('playing');
-                isMusicPlaying = false;
-            } else {
-                const playPromise = music.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        musicBtn.textContent = '🔊';
-                        musicBtn.classList.add('playing');
-                        isMusicPlaying = true;
-                    }).catch(err => {
-                        console.error('Ошибка воспроизведения song.mp3:', err);
-                        alert('Ошибка воспроизведения. Попробуйте нажать ещё раз.');
-                    });
-                }
-            }
-        });
-
-        // Голосовое с авторестартом
-        let isVoicePlaying = false;
-        let voiceRetries = 0;
-
-        function handleVoiceError() {
-            console.error('Ошибка загрузки vvoice.mp3');
-            if (voiceRetries < 2) {
-                voiceRetries++;
-                console.log('Повторная попытка загрузить vvoice.mp3...');
-                voice.load();
-            } else {
-                alert('Не удалось загрузить голосовой файл vvoice.mp3. Возможно, он повреждён.');
-            }
-        }
-
-        voice.addEventListener('error', handleVoiceError);
-
-        voiceBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (isVoicePlaying) {
-                voice.pause();
-                voiceBtn.textContent = '💌';
-                voiceBtn.classList.remove('playing');
-                isVoicePlaying = false;
-            } else {
-                const playPromise = voice.play();
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        voiceBtn.textContent = '💗';
-                        voiceBtn.classList.add('playing');
-                        isVoicePlaying = true;
-                    }).catch(err => {
-                        console.error('Ошибка воспроизведения vvoice.mp3:', err);
-                        alert('Ошибка воспроизведения. Попробуйте нажать ещё раз.');
-                    });
-                }
-            }
-        });
-
-        voice.addEventListener('ended', function() {
-            voiceBtn.textContent = '💌';
-            voiceBtn.classList.remove('playing');
-            isVoicePlaying = false;
         });
     </script>
 </body>
