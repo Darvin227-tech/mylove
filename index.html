@@ -8,503 +8,101 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Montserrat', sans-serif;
-            background: 
-                linear-gradient(135deg, rgba(194, 24, 91, 0.8) 0%, rgba(123, 31, 162, 0.8) 50%, rgba(106, 27, 154, 0.8) 100%),
-                url('images/background.jpg') center/cover no-repeat fixed;
-            min-height: 100vh;
-            color: #4a235a;
-            overflow-x: hidden;
-            position: relative;
+            background: linear-gradient(135deg, rgba(194,24,91,0.8) 0%, rgba(123,31,162,0.8) 50%, rgba(106,27,154,0.8) 100%),
+                        url('images/background.jpg') center/cover no-repeat fixed;
+            min-height: 100vh; color: #4a235a; overflow-x: hidden; position: relative;
         }
-
-        .hearts-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .heart {
-            position: absolute;
-            bottom: -100px;
-            animation: floatUp 8s linear infinite;
-            opacity: 0.6;
-            font-size: 24px;
-            color: #ff69b4;
-        }
-
+        .hearts-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .heart { position: absolute; bottom: -100px; animation: floatUp 8s linear infinite; opacity: 0.6; font-size: 24px; color: #ff69b4; }
         @keyframes floatUp {
             0% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
             100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
         }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            position: relative;
-            z-index: 2;
-        }
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        header {
-            text-align: center;
-            padding: 40px 20px 20px;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            margin: 20px 0;
-            box-shadow: 0 8px 32px rgba(128, 0, 128, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        header h1 {
-            font-family: 'Pacifico', cursive;
-            font-size: 3.5rem;
-            color: #6a1b9a;
-            text-shadow: 2px 2px 0px #f8bbd0;
-            margin-bottom: 10px;
-            min-height: 1.2em;
-        }
-
-        header p {
-            font-size: 1.2rem;
-            font-weight: 400;
-            color: #6a0dad;
-        }
-
-        .gallery-section {
-            margin: 40px 0;
-        }
-
-        .gallery-title {
-            font-family: 'Pacifico', cursive;
-            text-align: center;
-            font-size: 2.5rem;
-            color: #9c27b0;
-            margin-bottom: 30px;
-            text-shadow: 1px 1px 0px #fff;
-        }
-
-        .sparkle-container {
-            position: relative;
-        }
-
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .photo-card {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(8px);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 10px 30px rgba(155, 81, 224, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            aspect-ratio: 3/4;
-        }
-
-        .photo-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(128, 0, 128, 0.5);
-        }
-
-        .photo-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            transition: filter 0.3s;
-        }
-
-        .photo-card:hover img {
-            filter: brightness(1.05);
-        }
-
-        .sparkle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #ff69b4, 0 0 15px #da70d6;
-            animation: sparkleFloat 3s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        @keyframes sparkleFloat {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-30px) scale(0); opacity: 0; }
-        }
-
-        /* Модальное окно со слайдером */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(74, 20, 140, 0.85);
-            backdrop-filter: blur(5px);
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .modal-content-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            max-width: 90%;
-            max-height: 90%;
-        }
-
-        .modal-content {
-            max-width: 100%;
-            max-height: 90vh;
-            border-radius: 15px;
-            box-shadow: 0 0 40px #ff69b4;
-            animation: zoomIn 0.3s ease;
-        }
-
-        @keyframes zoomIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            color: #fff;
-            font-size: 40px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            z-index: 101;
-        }
-
-        .close:hover {
-            color: #ffb6c1;
-            transform: scale(1.2);
-        }
-
-        .slider-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            color: white;
-            font-size: 2.5rem;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: 0.2s;
-            z-index: 102;
-            user-select: none;
-        }
-
-        .slider-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        .prev-btn {
-            left: 10px;
-        }
-
-        .next-btn {
-            right: 10px;
-        }
-
-        /* Таймлайн */
-        .timeline-section {
-            margin: 40px 0;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 40px;
-            box-shadow: 0 8px 32px rgba(128, 0, 128, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-
-        .timeline-title {
-            font-family: 'Pacifico', cursive;
-            text-align: center;
-            font-size: 2.5rem;
-            color: #8e24aa;
-            margin-bottom: 40px;
-        }
-
-        .timeline {
-            position: relative;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px 0;
-        }
-
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: linear-gradient(to bottom, #c2185b, #9c27b0);
-            border-radius: 2px;
-            transform: translateX(-50%);
-        }
-
-        .timeline-item {
-            position: relative;
-            margin: 30px 0;
-            width: 100%;
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-        }
-
-        .timeline-item:nth-child(odd) {
-            justify-content: flex-start;
-        }
-
-        .timeline-item:nth-child(even) {
-            justify-content: flex-end;
-        }
-
-        .timeline-content {
-            background: rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(8px);
-            border-radius: 15px;
-            padding: 15px 20px;
-            width: 45%;
-            box-shadow: 0 4px 15px rgba(128, 0, 128, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            position: relative;
-        }
-
-        .timeline-content h3 {
-            font-family: 'Pacifico', cursive;
-            color: #6a1b9a;
-            font-size: 1.3rem;
-            margin-bottom: 5px;
-        }
-
-        .timeline-content .date {
-            font-size: 0.9rem;
-            color: #c2185b;
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: block;
-        }
-
-        .timeline-content p {
-            font-size: 0.95rem;
-            color: #4a235a;
-            line-height: 1.4;
-        }
-
-        .timeline-dot {
-            position: absolute;
-            left: 50%;
-            top: 20px;
-            width: 14px;
-            height: 14px;
-            background: #ff69b4;
-            border: 3px solid #fff;
-            border-radius: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 10px #ff69b4;
-            z-index: 2;
-        }
-
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; position: relative; z-index: 2; }
+        .reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.5,0,0,1); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        header { text-align: center; padding: 40px 20px 20px; background: rgba(255,255,255,0.25); backdrop-filter: blur(10px);
+                 border-radius: 30px; margin: 20px 0; box-shadow: 0 8px 32px rgba(128,0,128,0.3); border: 1px solid rgba(255,255,255,0.3); }
+        header h1 { font-family: 'Pacifico', cursive; font-size: 3.5rem; color: #6a1b9a; text-shadow: 2px 2px 0px #f8bbd0; margin-bottom: 10px; min-height: 1.2em; }
+        header p { font-size: 1.2rem; font-weight: 400; color: #6a0dad; }
+        .gallery-section { margin: 40px 0; }
+        .gallery-title { font-family: 'Pacifico', cursive; text-align: center; font-size: 2.5rem; color: #9c27b0; margin-bottom: 30px; text-shadow: 1px 1px 0px #fff; }
+        .sparkle-container { position: relative; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .photo-card { background: rgba(255,255,255,0.25); backdrop-filter: blur(8px); border-radius: 20px; overflow: hidden;
+                      box-shadow: 0 10px 30px rgba(155,81,224,0.3); transition: transform 0.3s ease, box-shadow 0.3s ease;
+                      cursor: pointer; border: 1px solid rgba(255,255,255,0.5); aspect-ratio: 3/4; }
+        .photo-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px rgba(128,0,128,0.5); }
+        .photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: filter 0.3s; }
+        .photo-card:hover img { filter: brightness(1.05); }
+        .sparkle { position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%;
+                   box-shadow: 0 0 8px #ff69b4, 0 0 15px #da70d6; animation: sparkleFloat 3s ease-in-out infinite;
+                   pointer-events: none; z-index: 1; }
+        @keyframes sparkleFloat { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-30px) scale(0); opacity: 0; } }
+        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+                 overflow: auto; background-color: rgba(74,20,140,0.85); backdrop-filter: blur(5px);
+                 align-items: center; justify-content: center; flex-direction: column; }
+        .modal-content-wrapper { position: relative; display: flex; align-items: center; justify-content: center; max-width: 90%; max-height: 90%; }
+        .modal-content { max-width: 100%; max-height: 90vh; border-radius: 15px; box-shadow: 0 0 40px #ff69b4; animation: zoomIn 0.3s ease; }
+        @keyframes zoomIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .close { position: absolute; top: 20px; right: 30px; color: #fff; font-size: 40px; font-weight: bold; cursor: pointer; transition: 0.2s; z-index: 101; }
+        .close:hover { color: #ffb6c1; transform: scale(1.2); }
+        .slider-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.2); backdrop-filter: blur(8px);
+                      border: 1px solid rgba(255,255,255,0.5); color: white; font-size: 2.5rem; width: 50px; height: 50px; border-radius: 50%;
+                      cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; z-index: 102; user-select: none; }
+        .slider-btn:hover { background: rgba(255,255,255,0.4); }
+        .prev-btn { left: 10px; } .next-btn { right: 10px; }
+        .timeline-section { margin: 40px 0; background: rgba(255,255,255,0.25); backdrop-filter: blur(10px); border-radius: 30px;
+                            padding: 40px; box-shadow: 0 8px 32px rgba(128,0,128,0.3); border: 1px solid rgba(255,255,255,0.3); }
+        .timeline-title { font-family: 'Pacifico', cursive; text-align: center; font-size: 2.5rem; color: #8e24aa; margin-bottom: 40px; }
+        .timeline { position: relative; max-width: 800px; margin: 0 auto; padding: 20px 0; }
+        .timeline::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px;
+                            background: linear-gradient(to bottom, #c2185b, #9c27b0); border-radius: 2px; transform: translateX(-50%); }
+        .timeline-item { position: relative; margin: 30px 0; width: 100%; display: flex; align-items: center; }
+        .timeline-item:nth-child(odd) { justify-content: flex-start; }
+        .timeline-item:nth-child(even) { justify-content: flex-end; }
+        .timeline-content { background: rgba(255,255,255,0.35); backdrop-filter: blur(8px); border-radius: 15px; padding: 15px 20px;
+                            width: 45%; box-shadow: 0 4px 15px rgba(128,0,128,0.2); border: 1px solid rgba(255,255,255,0.4); position: relative; }
+        .timeline-content h3 { font-family: 'Pacifico', cursive; color: #6a1b9a; font-size: 1.3rem; margin-bottom: 5px; }
+        .timeline-content .date { font-size: 0.9rem; color: #c2185b; font-weight: 600; margin-bottom: 10px; display: block; }
+        .timeline-content p { font-size: 0.95rem; color: #4a235a; line-height: 1.4; }
+        .timeline-dot { position: absolute; left: 50%; top: 20px; width: 14px; height: 14px; background: #ff69b4;
+                        border: 3px solid #fff; border-radius: 50%; transform: translateX(-50%); box-shadow: 0 0 10px #ff69b4; z-index: 2; }
         @media (max-width: 700px) {
-            .timeline::before {
-                left: 20px;
-            }
-            .timeline-item {
-                justify-content: flex-start !important;
-                padding-left: 50px;
-            }
-            .timeline-content {
-                width: 100%;
-            }
-            .timeline-dot {
-                left: 20px;
-            }
+            .timeline::before { left: 20px; } .timeline-item { justify-content: flex-start !important; padding-left: 50px; }
+            .timeline-content { width: 100%; } .timeline-dot { left: 20px; }
         }
-
-        .message-section {
-            background: rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(12px);
-            border-radius: 30px;
-            padding: 40px;
-            margin: 40px 0;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            box-shadow: 0 8px 32px rgba(128, 0, 128, 0.3);
-        }
-
-        .message-section h2 {
-            font-family: 'Pacifico', cursive;
-            font-size: 2.5rem;
-            color: #8e24aa;
-            margin-bottom: 25px;
-        }
-
-        .message-section p {
-            font-size: 1.2rem;
-            line-height: 1.9;
-            color: #4a148c;
-            max-width: 700px;
-            margin: 0 auto 20px;
-            text-align: justify;
-            text-indent: 2em;
-        }
-
-        .message-section p:last-of-type {
-            text-indent: 0;
-            text-align: center;
-            font-style: italic;
-        }
-
-        .heart-icon {
-            font-size: 3rem;
-            display: block;
-            margin-top: 20px;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); color: #ff69b4; }
-            100% { transform: scale(1); }
-        }
-
-        .click-heart {
-            position: absolute;
-            font-size: 24px;
-            pointer-events: none;
-            animation: popHeart 0.8s ease-out forwards;
-            z-index: 999;
-        }
-
-        @keyframes popHeart {
-            0% { transform: scale(0.5) translateY(0); opacity: 1; }
-            100% { transform: scale(1.5) translateY(-60px); opacity: 0; }
-        }
-
-        .music-btn, .voice-btn {
-            position: fixed;
-            z-index: 200;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(194, 24, 91, 0.8);
-            backdrop-filter: blur(8px);
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            color: white;
-            font-size: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(128, 0, 128, 0.5);
-            transition: all 0.3s ease;
-            user-select: none;
-        }
-
-        .music-btn {
-            bottom: 30px;
-            right: 30px;
-        }
-
-        .voice-btn {
-            bottom: 100px;
-            right: 30px;
-        }
-
-        .music-btn:hover, .voice-btn:hover {
-            background: rgba(123, 31, 162, 0.9);
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(194, 24, 91, 0.7);
-        }
-
-        .music-btn.playing, .voice-btn.playing {
-            animation: glow 2s infinite alternate;
-        }
-
-        @keyframes glow {
-            from { box-shadow: 0 0 10px #ff69b4; }
-            to { box-shadow: 0 0 25px #ff1493, 0 0 45px #ff69b4; }
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #9c27b0;
-            font-size: 0.9rem;
-            margin-top: 20px;
-        }
-
+        .message-section { background: rgba(255,255,255,0.35); backdrop-filter: blur(12px); border-radius: 30px; padding: 40px;
+                           margin: 40px 0; text-align: center; border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 8px 32px rgba(128,0,128,0.3); }
+        .message-section h2 { font-family: 'Pacifico', cursive; font-size: 2.5rem; color: #8e24aa; margin-bottom: 25px; }
+        .message-section p { font-size: 1.2rem; line-height: 1.9; color: #4a148c; max-width: 700px; margin: 0 auto 20px; text-align: justify; text-indent: 2em; }
+        .message-section p:last-of-type { text-indent: 0; text-align: center; font-style: italic; }
+        .heart-icon { font-size: 3rem; display: block; margin-top: 20px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); color: #ff69b4; } 100% { transform: scale(1); } }
+        .click-heart { position: absolute; font-size: 24px; pointer-events: none; animation: popHeart 0.8s ease-out forwards; z-index: 999; }
+        @keyframes popHeart { 0% { transform: scale(0.5) translateY(0); opacity: 1; } 100% { transform: scale(1.5) translateY(-60px); opacity: 0; } }
+        .music-btn, .voice-btn { position: fixed; z-index: 200; width: 60px; height: 60px; border-radius: 50%;
+            background: rgba(194,24,91,0.8); backdrop-filter: blur(8px); border: 2px solid rgba(255,255,255,0.6);
+            color: white; font-size: 28px; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(128,0,128,0.5); transition: all 0.3s ease; user-select: none; }
+        .music-btn { bottom: 30px; right: 30px; } .voice-btn { bottom: 100px; right: 30px; }
+        .music-btn:hover, .voice-btn:hover { background: rgba(123,31,162,0.9); transform: scale(1.1); box-shadow: 0 6px 20px rgba(194,24,91,0.7); }
+        .music-btn.playing, .voice-btn.playing { animation: glow 2s infinite alternate; }
+        @keyframes glow { from { box-shadow: 0 0 10px #ff69b4; } to { box-shadow: 0 0 25px #ff1493, 0 0 45px #ff69b4; } }
+        footer { text-align: center; padding: 20px; color: #9c27b0; font-size: 0.9rem; margin-top: 20px; }
         @media (max-width: 600px) {
-            header h1 { font-size: 2.5rem; }
-            .gallery-title { font-size: 2rem; }
-            .message-section { padding: 25px; }
-            .music-btn, .voice-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 24px;
-            }
-            .voice-btn {
-                bottom: 90px;
-            }
-            .music-btn {
-                bottom: 30px;
-            }
+            header h1 { font-size: 2.5rem; } .gallery-title { font-size: 2rem; } .message-section { padding: 25px; }
+            .music-btn, .voice-btn { width: 50px; height: 50px; font-size: 24px; } .voice-btn { bottom: 90px; } .music-btn { bottom: 30px; }
         }
     </style>
 </head>
 <body>
     <div class="hearts-bg" id="heartsContainer"></div>
 
-    <!-- Музыка -->
-    <audio id="bgMusic" src="images/Song.mp3" loop></audio>
-    <!-- Голосовое сообщение (теперь vvoice.mp3) -->
+    <audio id="bgMusic" src="images/song.mp3" loop></audio>
     <audio id="voiceMessage" src="images/vvoice.mp3"></audio>
 
     <div class="music-btn" id="musicToggle" title="Включить музыку">🔇</div>
@@ -529,9 +127,11 @@
                     <div class="photo-card"><img src="images/photo7.jpg" alt="Наше приключение" onclick="openModal(this.src)"></div>
                     <div class="photo-card"><img src="images/photo8.jpg" alt="Объятия" onclick="openModal(this.src)"></div>
                     <div class="photo-card"><img src="images/photo9.jpg" alt="Прогулка" onclick="openModal(this.src)"></div>
-                    <div class="photo-card"><img src="images/photo10.jpg" alt="Свидание" onclick="openModal(this.src)"></div>
-                    <div class="photo-card"><img src="images/photo11.jpg" alt="Радость" onclick="openModal(this.src)"></div>
-                    <div class="photo-card"><img src="images/photo12.jpg" alt="Счастье" onclick="openModal(this.src)"></div>
+                    <div class="photo-card"><img src="images/photo11.jpg" alt="Свидание" onclick="openModal(this.src)"></div>
+                    <div class="photo-card"><img src="images/photo12.jpg" alt="Радость" onclick="openModal(this.src)"></div>
+                    <div class="photo-card"><img src="images/photo13.jpg" alt="Счастье" onclick="openModal(this.src)"></div>
+                    <div class="photo-card"><img src="images/photo14.jpg" alt="Незабываемый день" onclick="openModal(this.src)"></div>
+                    <div class="photo-card"><img src="images/photo15.jpg" alt="Лучший момент" onclick="openModal(this.src)"></div>
                 </div>
             </div>
         </section>
@@ -539,38 +139,10 @@
         <section class="timeline-section reveal">
             <h2 class="timeline-title">Наша история 💫</h2>
             <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <span class="date">01.05.2026</span>
-                        <h3>День, когда всё началось</h3>
-                        <p>Мы встретились и мир сразу стал ярче. Самое лучшее начало нашей сказки.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <span class="date">15.05.2026</span>
-                        <h3>Первый поцелуй</h3>
-                        <p>Волшебный вечер, когда наши сердца забились в унисон.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <span class="date">10.06.2026</span>
-                        <h3>Первая поездка</h3>
-                        <p>Мы сбежали вдвоём на выходные. Смех, закаты и понимание, что мы созданы друг для друга.</p>
-                    </div>
-                </div>
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <span class="date">24.06.2026</span>
-                        <h3>Сегодня</h3>
-                        <p>Я смотрю на тебя и понимаю – ты моё самое большое сокровище. Люблю тебя бесконечно.</p>
-                    </div>
-                </div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><span class="date">01.05.2026</span><h3>День, когда всё началось</h3><p>Мы встретились и мир сразу стал ярче.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><span class="date">15.05.2026</span><h3>Первый поцелуй</h3><p>Волшебный вечер, когда наши сердца забились в унисон.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><span class="date">10.06.2026</span><h3>Первая поездка</h3><p>Мы сбежали вдвоём на выходные.</p></div></div>
+                <div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-content"><span class="date">24.06.2026</span><h3>Сегодня</h3><p>Я смотрю на тебя и понимаю – ты моё сокровище.</p></div></div>
             </div>
         </section>
 
@@ -583,9 +155,7 @@
             <span class="heart-icon">💗</span>
         </section>
 
-        <footer class="reveal">
-            <p>Сделано с любовью для самой прекрасной девушки на свете 💜🌸</p>
-        </footer>
+        <footer class="reveal"><p>Сделано с любовью для самой прекрасной девушки на свете 💜🌸</p></footer>
     </div>
 
     <div id="imageModal" class="modal">
@@ -598,11 +168,9 @@
     </div>
 
     <script>
-        // 1. Плавающие сердечки
         const heartsContainer = document.getElementById('heartsContainer');
         function createHeart() {
-            const heart = document.createElement('div');
-            heart.classList.add('heart');
+            const heart = document.createElement('div'); heart.classList.add('heart');
             heart.innerHTML = ['💜','💗','💖','💕','💝','🌸'][Math.floor(Math.random() * 6)];
             heart.style.left = Math.random() * 100 + '%';
             heart.style.animationDuration = (Math.random() * 5 + 5) + 's';
@@ -612,132 +180,86 @@
         }
         setInterval(createHeart, 300);
 
-        // 2. Модальное окно + слайдер
         const galleryImages = Array.from(document.querySelectorAll('#gallery img')).map(img => img.src);
         let currentIndex = 0;
-
         function openModal(src) {
             currentIndex = galleryImages.indexOf(src);
             if (currentIndex === -1) currentIndex = 0;
             document.getElementById('imageModal').style.display = 'flex';
             updateModalImage();
         }
-
-        function updateModalImage() {
-            document.getElementById('modalImage').src = galleryImages[currentIndex];
-        }
-
-        function changeSlide(direction) {
-            currentIndex += direction;
+        function updateModalImage() { document.getElementById('modalImage').src = galleryImages[currentIndex]; }
+        function changeSlide(dir) {
+            currentIndex += dir;
             if (currentIndex < 0) currentIndex = galleryImages.length - 1;
             if (currentIndex >= galleryImages.length) currentIndex = 0;
             updateModalImage();
         }
-
-        function closeModal() {
-            document.getElementById('imageModal').style.display = 'none';
-        }
-
-        document.addEventListener('keydown', function(e) {
+        function closeModal() { document.getElementById('imageModal').style.display = 'none'; }
+        document.addEventListener('keydown', e => {
             if (e.key === 'Escape') closeModal();
             if (e.key === 'ArrowLeft') changeSlide(-1);
             if (e.key === 'ArrowRight') changeSlide(1);
         });
 
-        // 3. Анимация появления
-        const revealElements = document.querySelectorAll('.reveal');
+        const revealEls = document.querySelectorAll('.reveal');
         function revealOnScroll() {
-            revealElements.forEach(el => {
-                if (el.getBoundingClientRect().top < window.innerHeight - 80) el.classList.add('active');
-            });
+            revealEls.forEach(el => { if (el.getBoundingClientRect().top < window.innerHeight - 80) el.classList.add('active'); });
         }
         window.addEventListener('scroll', revealOnScroll);
         window.addEventListener('load', revealOnScroll);
 
-        // 4. Искры
         const sparkleBox = document.getElementById('sparkleBox');
         function createSparkle() {
-            const spark = document.createElement('div');
-            spark.className = 'sparkle';
-            spark.style.left = Math.random() * 100 + '%';
-            spark.style.top = Math.random() * 100 + '%';
+            const spark = document.createElement('div'); spark.className = 'sparkle';
+            spark.style.left = Math.random() * 100 + '%'; spark.style.top = Math.random() * 100 + '%';
             spark.style.animationDuration = (Math.random() * 2 + 2) + 's';
             sparkleBox.appendChild(spark);
             setTimeout(() => spark.remove(), 3000);
         }
         setInterval(createSparkle, 300);
 
-        // 5. Печатающийся заголовок
         const typedTitle = document.getElementById('typedTitle');
         const fullText = "Ты — моё волшебство 💖";
-        let i = 0;
-        typedTitle.textContent = '';
+        let i = 0; typedTitle.textContent = '';
         function typeWriter() {
-            if (i < fullText.length) {
-                typedTitle.textContent += fullText.charAt(i);
-                i++;
-                setTimeout(typeWriter, 100);
-            }
+            if (i < fullText.length) { typedTitle.textContent += fullText.charAt(i); i++; setTimeout(typeWriter, 100); }
         }
         window.addEventListener('load', typeWriter);
 
-        // 6. Сердечки по клику
         document.addEventListener('click', function(e) {
-            const heart = document.createElement('span');
-            heart.className = 'click-heart';
-            heart.innerHTML = '💖';
-            heart.style.left = e.clientX - 12 + 'px';
-            heart.style.top = e.clientY - 12 + 'px';
+            const heart = document.createElement('span'); heart.className = 'click-heart'; heart.innerHTML = '💖';
+            heart.style.left = e.clientX - 12 + 'px'; heart.style.top = e.clientY - 12 + 'px';
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 800);
         });
 
-        // 7. Музыка
         const music = document.getElementById('bgMusic');
         const musicBtn = document.getElementById('musicToggle');
         let isMusicPlaying = false;
         musicBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (isMusicPlaying) {
-                music.pause();
-                musicBtn.textContent = '🔇';
-                musicBtn.classList.remove('playing');
-                musicBtn.title = 'Включить музыку';
-            } else {
-                music.play().then(() => {
-                    musicBtn.textContent = '🔊';
-                    musicBtn.classList.add('playing');
-                    musicBtn.title = 'Выключить музыку';
-                }).catch(err => console.log('Нажмите ещё раз'));
+            if (isMusicPlaying) { music.pause(); musicBtn.textContent = '🔇'; musicBtn.classList.remove('playing'); }
+            else {
+                music.play().then(() => { musicBtn.textContent = '🔊'; musicBtn.classList.add('playing'); })
+                     .catch(err => alert('Не удалось включить музыку. Проверьте, что файл song.mp3 загружен.'));
             }
             isMusicPlaying = !isMusicPlaying;
         });
 
-        // 8. Голосовое сообщение (vvoice.mp3)
         const voice = document.getElementById('voiceMessage');
         const voiceBtn = document.getElementById('voiceToggle');
         let isVoicePlaying = false;
         voiceBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (isVoicePlaying) {
-                voice.pause();
-                voiceBtn.textContent = '💌';
-                voiceBtn.classList.remove('playing');
-                voiceBtn.title = 'Прослушать голосовое послание';
-            } else {
-                voice.play().then(() => {
-                    voiceBtn.textContent = '💗';
-                    voiceBtn.classList.add('playing');
-                    voiceBtn.title = 'Остановить';
-                }).catch(err => console.log('Ошибка воспроизведения'));
+            if (isVoicePlaying) { voice.pause(); voiceBtn.textContent = '💌'; voiceBtn.classList.remove('playing'); }
+            else {
+                voice.play().then(() => { voiceBtn.textContent = '💗'; voiceBtn.classList.add('playing'); })
+                     .catch(err => alert('Не удалось воспроизвести голосовое. Проверьте, что файл vvoice.mp3 загружен.'));
             }
             isVoicePlaying = !isVoicePlaying;
         });
-        voice.addEventListener('ended', function() {
-            voiceBtn.textContent = '💌';
-            voiceBtn.classList.remove('playing');
-            isVoicePlaying = false;
-        });
+        voice.addEventListener('ended', function() { voiceBtn.textContent = '💌'; voiceBtn.classList.remove('playing'); isVoicePlaying = false; });
     </script>
 </body>
 </html>
